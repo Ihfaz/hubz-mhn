@@ -3,13 +3,18 @@ package com.salwa;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.salwa.model.Event;
 import org.json.*;
 
 public class Server {
     private static final int CONNECTION_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 5000;
 
-    public static JSONObject get(String urlString) {
+    public static List<Event> get(String urlString) {
+        List<Event> eventList = new ArrayList<>();
         StringBuilder result = new StringBuilder();
         URL url = null;
         HttpURLConnection con = null;
@@ -34,10 +39,18 @@ public class Server {
             e.printStackTrace();
         }
 
-        return new JSONObject(result.toString());
+        JSONObject res = new JSONObject(result.toString());
+        JSONArray arr = res.getJSONArray("events");
+        for (int i = 0; i < arr.length(); i++){
+            JSONObject eventJson = arr.getJSONObject(i);
+            Event event = new Event(eventJson.getString("url"), eventJson.getString("visitorId"), eventJson.getLong("timestamp"));
+            eventList.add(event);
+        }
+
+        return eventList;
     }
 
-    public static int post(String urlString, JSONObject payload){
+    public static void post(String urlString, String payload){
         int statusCode = 0;
         StringBuilder response = new StringBuilder("");
 
@@ -57,7 +70,7 @@ public class Server {
         con.setConnectTimeout(CONNECTION_TIMEOUT);
 
         try(OutputStream os = con.getOutputStream()) {
-            byte[] input = payload.toString().getBytes("utf-8");
+            byte[] input = payload.getBytes("utf-8");
             os.write(input, 0, input.length);
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,8 +86,6 @@ public class Server {
             e.printStackTrace();
         }
 
-
         System.out.println(response.toString());
-        return statusCode;
     }
 }
