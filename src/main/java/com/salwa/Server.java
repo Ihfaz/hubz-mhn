@@ -3,13 +3,18 @@ package com.salwa;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.salwa.model.Event;
 import org.json.*;
 
 public class Server {
     private static final int CONNECTION_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 5000;
 
-    public static JSONObject get(String urlString) {
+    public static List<Event> get(String urlString) {
+        List<Event> eventList = new ArrayList<>();
         StringBuilder result = new StringBuilder();
         URL url = null;
         HttpURLConnection con = null;
@@ -34,7 +39,15 @@ public class Server {
             e.printStackTrace();
         }
 
-        return new JSONObject(result.toString());
+        JSONObject res = new JSONObject(result.toString());
+        JSONArray arr = res.getJSONArray("events");
+        for (int i = 0; i < arr.length(); i++){
+            JSONObject eventJson = arr.getJSONObject(i);
+            Event event = new Event(eventJson.getString("url"), eventJson.getString("visitorId"), eventJson.getLong("timestamp"));
+            eventList.add(event);
+        }
+
+        return eventList;
     }
 
     public static int post(String urlString, JSONObject payload){
