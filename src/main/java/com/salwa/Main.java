@@ -1,9 +1,13 @@
 package com.salwa;
 
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.salwa.model.*;
 import java.util.*;
+
+import com.salwa.model.Event;
+import java.util.List;
 
 public class Main {
     public static final Long CONSECUTIVE_SESSIONS_MAX_TIME_DIFF = 600000L;
