@@ -7,11 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.salwa.model.Event;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.*;
 
 public class Server {
     private static final int CONNECTION_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 5000;
+    private static HttpClient httpClient = HttpClientBuilder.create().build();
 
     public static List<Event> get(String urlString) {
         List<Event> eventList = new ArrayList<>();
@@ -51,41 +58,50 @@ public class Server {
     }
 
     public static void post(String urlString, String payload){
-        int statusCode = 0;
-        StringBuilder response = new StringBuilder("");
+//        StringBuilder response = new StringBuilder("");
 
-        URL url = null;
-        HttpURLConnection con = null;
+//        URL url;
+//        HttpURLConnection con = null;
+//        try {
+//            url = new URL(urlString);
+//            con = (HttpURLConnection) url.openConnection();
+//            con.setRequestMethod("POST");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        con.setRequestProperty("Content-Type", "application/json; utf-8");
+//        con.setRequestProperty("Accept", "application/json");
+//        con.setDoOutput(true);
+//        con.setConnectTimeout(CONNECTION_TIMEOUT);
+//
+//        try(OutputStream os = con.getOutputStream()) {
+//            byte[] input = payload.getBytes("utf-8");
+//            os.write(input, 0, input.length);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try(BufferedReader br = new BufferedReader(
+//                new InputStreamReader(con.getInputStream(), "utf-8"))) {
+//            String responseLine;
+//            while ((responseLine = br.readLine()) != null) {
+//                response.append(responseLine.trim());
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+
         try {
-            url = new URL(urlString);
-            con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("POST");
-        } catch (IOException e) {
-            e.printStackTrace();
+            StringEntity entity = new StringEntity(payload, ContentType.APPLICATION_JSON);
+            HttpPost request = new HttpPost(urlString);
+            request.setEntity(entity);
+            HttpResponse res = httpClient.execute(request);
+            System.out.println(res.getStatusLine());
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
-
-        con.setRequestProperty("Content-Type", "application/json; utf-8");
-        con.setRequestProperty("Accept", "application/json");
-        con.setDoOutput(true);
-        con.setConnectTimeout(CONNECTION_TIMEOUT);
-
-        try(OutputStream os = con.getOutputStream()) {
-            byte[] input = payload.getBytes("utf-8");
-            os.write(input, 0, input.length);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try(BufferedReader br = new BufferedReader(
-                new InputStreamReader(con.getInputStream(), "utf-8"))) {
-            String responseLine = null;
-            while ((responseLine = br.readLine()) != null) {
-                response.append(responseLine.trim());
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(response);
     }
 }
