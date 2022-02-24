@@ -86,6 +86,6 @@ public class Server {
             e.printStackTrace();
         }
 
-        System.out.println(response.toString());
+        System.out.println(response);
     }
 }

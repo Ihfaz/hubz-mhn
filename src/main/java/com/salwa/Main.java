@@ -25,10 +25,9 @@ public class Main {
             e.printStackTrace();
         }
 
-        System.out.println(sessionByUserJson);
-
-
-//        Server.post(postUrl, sesionByUserJson);
+//        System.out.println(sessionByUserJson);
+        String postUrl = "Something";
+        Server.post(postUrl, sessionByUserJson);
     }
 
     public static SessionByUser groupUserSessions(List<Event> events) {
